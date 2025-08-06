@@ -1,16 +1,25 @@
+# Note: by default this workflow assumes that your github user name = your Docker Hub user name.
+# You can force it using `with: {DOCKER_HUB_USERNAME: myuser}` in the calling workflow
+# It will also probably break for GitHub users or repositories with uppercase letters.
+
 name: Automated Build
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      DOCKER_HUB_USERNAME:
+        required: false
+        type: string
+      PLATFORMS:
+        required: false
+        type: string
+        default: 'linux/amd64,linux/arm64,linux/arm/v7'
+    secrets:
+      DOCKER_HUB_TOKEN:
+        required: false
 
 env:
   DOCKER_BUILDKIT: 1
-
-# Note: this is copy-pasted and adapted from
-# https://github.com/jpetazzo/workflows/blob/main/.github/workflows/automated-build.yaml
-# I need to find an elegant way to manage the multi-target built 🤔
 
 jobs:
   push:
@@ -49,7 +58,7 @@ jobs:
           done
           echo 'EOF' >> $GITHUB_ENV
 
-      -
+      - 
         uses: actions/checkout@v3
 
       -
@@ -81,11 +90,3 @@ jobs:
           platforms: ${{ inputs.PLATFORMS }}
           push: true
           tags: ${{ env.IMAGES }}
-
-      -
-        uses: docker/build-push-action@v3
-        with:
-          platforms: ${{ inputs.PLATFORMS }}
-          push: true
-          target: vspod
-          tags: jpetazzo/shpod:vspod,ghcr.io/jpetazzo/shpod:vspod
