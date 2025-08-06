@@ -19,7 +19,6 @@ jobs:
   push:
 
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
 
     permissions:
       contents: read
