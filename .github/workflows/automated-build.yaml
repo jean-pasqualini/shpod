@@ -7,9 +7,6 @@ name: Automated Build
 on:
   workflow_dispatch:
     inputs:
-      DOCKER_HUB_USERNAME:
-        required: false
-        type: string
       PLATFORMS:
         required: false
         type: string
